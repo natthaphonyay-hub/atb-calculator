@@ -23,7 +23,7 @@
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   
   <style>
     :root {
@@ -1337,6 +1337,86 @@
         transition: none;
       }
     }
+  
+    /* =====================================================================
+       DoseLogic label theme (theme 3, owner's pick 2026-11-06).
+       Spec: 0 Inbox/DoseLogic-หน้าแรก/00-ธีมฉลากยา-DoseLogic.md in the owner's PARA.
+       Flat label look: dark thin frames, near-square corners, no soft shadows or gradients.
+       Colours that carry meaning (checkpoint yellow, total teal, progress states, dose badges) keep their hue.
+       ===================================================================== */
+    :root {
+      --ink: #1d2420; --ink-2: #4d5a52; --rule: #9aa79e; --paper: #eef1ee; --label: #fbfcfa;
+      --primary: #0e7490; --primary-dark: #155e75;
+      --bg-main: var(--paper); --bg-card: var(--label);
+      --text-primary: var(--ink); --text-secondary: var(--ink-2); --text-muted: #5f6b63; --border: #c9d1cb;
+      --shadow: none; --shadow-lg: none; --shadow-xl: none;
+      --radius: 4px; --radius-sm: 3px; --radius-full: 3px;
+      --sans: 'Sarabun', 'Thonburi', -apple-system, sans-serif;
+    }
+    body { font-family: var(--sans); background: var(--paper); }
+    body::before { display: none; }
+
+    /* header: one solid strip in the tool colour, like the label band on the home page */
+    .header { background: var(--primary); box-shadow: none; border-bottom: 2px solid var(--ink); }
+    .header-icon, .header-btn { border-radius: 3px; backdrop-filter: none; }
+
+    /* cards: label frames */
+    .card { border: 1.5px solid var(--ink); box-shadow: none; }
+    .card:hover { box-shadow: none; }
+    .card-header { border-bottom: 1px dashed var(--rule); }
+    .card-title { font-weight: 800; }
+    .card-title-icon { border-radius: 3px; }
+    .input-card .card-title-icon { background: var(--ink); }
+
+    /* fields */
+    .form-input { border-width: 1.5px; border-color: var(--rule); background: #ffffff; }
+    .form-input:focus { border-color: var(--ink); box-shadow: 0 0 0 3px rgba(14, 116, 144, 0.18); }
+    .duration-box { background: #edf5f7; border-width: 1.5px; border-color: #a9cfd9; }
+    .duration-toggle { box-shadow: none; border: 1px solid var(--border); }
+    .duration-toggle-btn.active { background: var(--ink); box-shadow: none; }
+    .duration-input-group input { border-width: 1.5px; }
+
+    /* buttons */
+    .btn-primary { background: var(--ink); box-shadow: none; }
+    .btn-primary:hover { transform: translate(-2px, -2px); box-shadow: 3px 3px 0 var(--rule); }
+    .btn-success { background: #047857; box-shadow: none; }
+    .btn-success:hover { transform: translate(-2px, -2px); box-shadow: 3px 3px 0 var(--ink); }
+    .btn-outline { border: 1.5px solid var(--ink); color: var(--ink); }
+    .btn-outline:hover { border-color: var(--ink); color: var(--ink); background: var(--label); }
+    .btn-copy { border: 1.5px solid var(--ink); color: var(--ink); }
+    .btn-copy:hover { background: var(--label); border-color: var(--ink); }
+
+    /* note */
+    .note-card .card-header { background: #eef0fb; border-bottom: 1px dashed #a5b0e6; }
+    .note-card .card-title-icon { background: #4f46e5; }
+    .note-content { background: #fbfbfe; }
+
+    /* progress: state colours kept, gradients flattened */
+    .progress-card .card-header { background: #047857; border-bottom: 2px solid var(--ink); }
+    .progress-check-date { border-width: 1.5px; }
+    .progress-check-inputs input { border-width: 1.5px; }
+    .progress-display { background: #ecf7f1; border-width: 1.5px; }
+    .progress-display.warning { background: #fdf8dc; }
+    .progress-display.urgent { background: #fdeeee; }
+
+    /* schedule */
+    .schedule-card .card-header { background: #edf3fb; border-bottom: 1px dashed #9cbce6; }
+    .schedule-card .card-title-icon { background: #2563eb; }
+    .schedule-summary { background: var(--paper); }
+    .schedule-table th { background: var(--paper); border-bottom: 1.5px solid var(--ink); }
+    .schedule-table tr.day-row th { background: #e3e8e4; }
+    .schedule-table tr.received { background: #ecf7f1; }
+    .schedule-table tr.next-dose { background: #fdf3c8; }
+    .dose-number { background: var(--primary); box-shadow: none; border-radius: 3px; }
+    .schedule-table tr.received .dose-number { background: #047857; box-shadow: none; }
+    .schedule-table tr.next-dose .dose-number { background: #d97706; box-shadow: none; }
+
+    /* in-page confirm, toast, footer */
+    .reset-bar, .toast { border-radius: 4px; }
+    .reset-bar { border: 1.5px solid var(--ink); box-shadow: none; }
+    .footer { background: var(--ink); }
+    .footer-icon { border-radius: 3px; }
+    .footer-info-org { font-family: 'JetBrains Mono', monospace; }
   </style>
 </head>
 <body>
