@@ -1378,9 +1378,9 @@
 
     /* buttons */
     .btn-primary { background: var(--ink); box-shadow: none; }
-    .btn-primary:hover { transform: translate(-2px, -2px); box-shadow: 3px 3px 0 var(--rule); }
+    .btn-primary:hover { background: #2d3631; transform: none; }
     .btn-success { background: #047857; box-shadow: none; }
-    .btn-success:hover { transform: translate(-2px, -2px); box-shadow: 3px 3px 0 var(--ink); }
+    .btn-success:hover { background: #065f46; transform: none; }
     .btn-outline { border: 1.5px solid var(--ink); color: var(--ink); }
     .btn-outline:hover { border-color: var(--ink); color: var(--ink); background: var(--label); }
     .btn-copy { border: 1.5px solid var(--ink); color: var(--ink); }
@@ -1409,7 +1409,7 @@
     .schedule-table tr.next-dose { background: #fdf3c8; }
     .dose-number { background: var(--primary); box-shadow: none; border-radius: 3px; }
     .schedule-table tr.received .dose-number { background: #047857; box-shadow: none; }
-    .schedule-table tr.next-dose .dose-number { background: #d97706; box-shadow: none; }
+    .schedule-table tr.next-dose .dose-number { background: #b45309; box-shadow: none; }
 
     /* in-page confirm, toast, footer */
     .reset-bar, .toast { border-radius: 4px; }
@@ -1417,6 +1417,51 @@
     .footer { background: var(--ink); }
     .footer-icon { border-radius: 3px; }
     .footer-info-org { font-family: 'JetBrains Mono', monospace; }
+
+    /* ---------- type scale, shared with Drip (owner asked for a font-size pass 2026-11-06) ----------
+       caption 13 (Thai floor), secondary 14, body 15, fields 16 (no iPhone zoom), card title 17, page title 20 */
+    :root { --fs-cap: 13px; --fs-sm: 14px; --fs-card: 17px; }
+    .header-text p, .duration-input-group label, .progress-percent-label, .stat-label, .stat-unit, .progress-date-item,
+    .summary-label, .schedule-table th, .dose-badge, .footer-brand-text p, .footer-info-label, .footer-info-version,
+    .footer-copyright, .field-hint, .schedule-table tr.day-row th, .schedule-table tr.gap-row td { font-size: var(--fs-cap); }
+    .form-label, .duration-toggle-btn, .progress-check-label, .toggle-btn, .manual-link { font-size: var(--fs-sm); }
+    .form-input, .progress-check-inputs input { font-size: 16px; }
+    .card-title { font-size: var(--fs-card); }
+    .note-content { font-size: 13px; }
+    .stat-value, .progress-percent, .summary-value, .progress-date-value { font-variant-numeric: tabular-nums; }
+
+    /* ---------- contrast: status colours one step darker, same hues (green received, amber remaining, red end) ---------- */
+    :root { --success: #047857; --warning: #b45309; --danger: #b91c1c; }
+    .progress-percent { color: var(--success); }
+    .toggle-btn { background: transparent; border: 1.5px solid rgba(255, 255, 255, 0.75); font-weight: 600; }
+    .toggle-btn:hover { background: rgba(255, 255, 255, 0.08); }
+    .schedule-table tr.next-dose { border-left: 0; }
+
+    /* ---------- touch targets: 44 px for buttons a finger presses often ---------- */
+    .header-btn { width: 44px; height: 44px; }
+    .btn, .manual-link, .btn-now { min-height: 44px; }
+    .footer-copyright { max-width: 75ch; margin-inline: auto; }
+    .duration-toggle-btn, .toggle-btn { min-height: 40px; }
+    .footer a { display: inline-block; padding: 10px 0; }
+
+    /* ---------- browser surfaces in the theme colours ---------- */
+    ::selection { background: rgba(14, 116, 144, 0.22); }
+    input, textarea { caret-color: var(--primary); }
+    a { text-underline-offset: 3px; }
+
+    /* ---------- computer screens: order on the left and the note it produces beside it
+       (the note column grows to 680 px so its lines do not wrap); dose progress and schedule full width below.
+       Same order as the page source, so Tab moves in reading order. ---------- */
+    @media (min-width: 1024px) {
+      .header-inner, .footer-inner { max-width: 1200px; }
+      main { max-width: 1240px; display: grid; grid-template-columns: minmax(400px, 1fr) minmax(0, 680px); gap: 20px; align-items: start; }
+      main > * { grid-column: 1 / -1; }
+      main > #inputCard { grid-column: 1; }
+      main > #noteSection { grid-column: 2; align-self: stretch; }
+      /* progress spans the full width: four numbers in one row, check-date fields kept to a sensible width */
+      .progress-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .progress-check-inputs { max-width: 640px; }
+    }
   </style>
 </head>
 <body>
