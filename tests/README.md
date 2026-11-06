@@ -30,7 +30,9 @@ node tests/behaviour.mjs index.html /tmp/atb-v5.0.html /tmp/atb-shots /tmp/atb-w
 ## 3. ดูว่าหน้า Google Sites แสดงเวอร์ชันไหน
 
 ```sh
-node tests/sites-check.mjs
+node tests/sites-check.mjs https://sites.google.com/view/pharmatoolseditor/atb-calculator
 ```
+
+ไม่ใส่ลิงก์จะเปิดหน้าแรกของเว็บ และพิมพ์รายชื่อหน้าทั้งหมดในบรรทัด PAGES
 
 บรรทัด FRAME ที่มี `"version":"Version 5.x"` คือเวอร์ชันที่หน้า "นับยาครบ" แสดงอยู่ ถ้ากรอบบนสุดชื่อ "การฝังแบบกำหนดเอง" แปลว่ายังเป็นโค้ดวาง ไม่ได้ดึงจาก GitHub

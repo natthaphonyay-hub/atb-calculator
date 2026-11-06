@@ -1,4 +1,4 @@
-// usage: node tests/sites-check.mjs   (prints the frames and the ATB version shown on the public DoseLogic Google Site)
+// usage: node tests/sites-check.mjs [page URL, default the DoseLogic home]   (prints the frames and the ATB version shown on the public DoseLogic Google Site)
 // Which ATB does the public Google Sites page show right now? Lists the frame targets and the version text inside them.
 import { spawn } from 'node:child_process';
 import { mkdtempSync } from 'node:fs';
@@ -16,7 +16,8 @@ const send = (method, params = {}, sessionId) => new Promise(res => { const id =
 await send('Page.enable');
 await send('Target.setAutoAttach', { autoAttach: true, waitForDebuggerOnStart: false, flatten: true });
 await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 2, mobile: true });
-await send('Page.navigate', { url: 'https://sites.google.com/view/pharmatoolseditor?nocache=' + Date.now() });
+const target = process.argv[2] || 'https://sites.google.com/view/pharmatoolseditor';
+await send('Page.navigate', { url: target + (target.includes('?') ? '&' : '?') + 'nocache=' + Date.now() });
 await sleep(9000);
 for (const a of attached) {
   const s = a.sessionId;
@@ -30,5 +31,7 @@ for (const a of attached) {
 }
 const top = await send('Runtime.evaluate', { expression: `JSON.stringify([...document.querySelectorAll('iframe')].map(f => (f.getAttribute('title') || '') + ' -> ' + (f.getAttribute('src') || '').slice(0, 80)))`, returnByValue: true });
 console.log('TOP iframes:', top.result.result.value);
+const nav = await send('Runtime.evaluate', { expression: `JSON.stringify([...new Set([...document.querySelectorAll('a[href*="/view/pharmatoolseditor"]')].map(a => decodeURI(a.getAttribute('href'))))])`, returnByValue: true });
+console.log('PAGES:', nav.result.result.value);
 seen.forEach(v => console.log('FRAME', v));
 ws.close(); proc.kill();
