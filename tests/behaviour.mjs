@@ -53,9 +53,10 @@ const shot = async (file, sels, pad = 8) => {
 
 // ---------- 1. top-level behaviour ----------
 await load(pathToFileURL(NEW).href); await ev(H);
-ok('opens with no guessed start date/time', await ev(`$('startDate').value === '' && $('startTime').value === ''`));
+const V50 = `(() => { const now = new Date(); let h = now.getHours() - 1; if (h % 2 !== 0) h--; if (h < 0) { h += 24; now.setDate(now.getDate() - 1); } return formatDateInput(now) + ' ' + String(h).padStart(2, '0') + ':00'; })()`;
+ok('opens with start date/time filled in exactly like v5.0', await ev(`$('startDate').value + ' ' + $('startTime').value === ${V50}`), await ev(`$('startDate').value + ' ' + $('startTime').value`));
 ok('no save/load buttons', await ev(`!document.querySelector('[onclick*="Preset"]')`));
-ok('empty form shows what is missing, note hidden', await ev(`$('noteSection').classList.contains('hidden') && $('formStatus').textContent.includes('ยังขาด: ชื่อยา, ขนาดยา, หน่วย, วันที่เริ่ม, เวลาเริ่ม')`), await ev(`$('formStatus').textContent`));
+ok('empty form shows what is missing, note hidden', await ev(`$('noteSection').classList.contains('hidden') && $('formStatus').textContent.includes('ยังขาด: ชื่อยา, ขนาดยา, หน่วย') && !$('formStatus').textContent.includes('วันที่เริ่ม')`), await ev(`$('formStatus').textContent`));
 await ev(`typeIn('drugName', 'Ceftriaxone')`);
 ok('picking a listed drug fills dose and unit, hint shows', await ev(`$('dose').value === '2' && $('unit').value === 'g' && !$('autofillHint').classList.contains('hidden')`));
 await ev(`typeIn('drugName', 'Ceftriaxonex')`);
@@ -104,7 +105,7 @@ await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Esca
 await sleep(150);
 ok('Esc cancels and keeps the data', await ev(`$('resetBar').classList.contains('hidden') && $('drugName').value === 'Ceftazidime' && document.activeElement === $('resetBtn')`));
 await click('#resetBtn'); await click('.btn-danger');
-ok('confirm reset clears inputs, back to days 5/7, message shown', await ev(`['drugName','dose','unit','startDate','startTime'].every(id => $(id).value === '') && $('duration1').value === '5' && $('duration2').value === '7' && $('btnDays').classList.contains('active') && $('toast').textContent === 'ล้างข้อมูลแล้ว' && $('noteSection').classList.contains('hidden')`));
+ok('confirm reset clears drug, refills start like v5.0, back to days 5/7, message shown', await ev(`['drugName','dose','unit'].every(id => $(id).value === '') && $('startDate').value + ' ' + $('startTime').value === ${V50} && $('duration1').value === '5' && $('duration2').value === '7' && $('btnDays').classList.contains('active') && $('toast').textContent === 'ล้างข้อมูลแล้ว' && $('noteSection').classList.contains('hidden')`));
 ok('no native dialogs or errors at top level', !b.log.some(l => l.startsWith('DIALOG') || l.startsWith('EXC')), b.log.filter(l => !l.includes('favicon')).slice(0, 3).join(' | '));
 
 // ---------- 2. before screenshots (v5.0) ----------
