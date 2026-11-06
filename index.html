@@ -1787,12 +1787,12 @@
         <div class="footer-info">
           <div class="footer-info-label">พัฒนาโดย</div>
           <div class="footer-info-org">DoseLogic</div>
-          <div class="footer-info-version">Version 5.5 | November 2026</div>
+          <div class="footer-info-version">Version 5.6 | November 2026</div>
           <div class="footer-info-version" style="opacity:1;margin-top:6px"><a href="https://natthaphonyay-hub.github.io/atb-calculator/manual/" target="_blank" rel="noopener" style="color:inherit;font-weight:700">คู่มือการใช้</a></div>
         </div>
       </div>
       <div class="footer-divider">
-        <p class="footer-copyright">© 2026 ATB Calculator. สงวนลิขสิทธิ์ | เครื่องมือนี้ใช้สำหรับการประมาณการเท่านั้น ควรใช้วิจารณญาณทางคลินิกร่วมด้วย</p>
+        <p class="footer-copyright">© 2026 ATB Calculator. สงวนลิขสิทธิ์ | เครื่องมือนี้ใช้สำหรับการประมาณการเท่านั้น ควรใช้วิจารณญาณทางคลินิกร่วมด้วย<span id="logNotice" hidden><br>เว็บนี้นับจำนวนการเข้าใช้และเก็บค่าที่ใช้คำนวณแบบไม่ระบุตัวตน เพื่อปรับปรุงเครื่องมือ ห้ามกรอกชื่อหรือ HN ผู้ป่วย</span></p>
       </div>
     </div>
   </footer>
@@ -1827,6 +1827,66 @@
     let autoFilledFor = null;
     let toastTimer = null;
 
+    /* ---------- usage log (anonymous) ----------
+       Sends page visits and the numbers used in a calculation to the DoseLogic Google Sheet
+       (Apps Script code: 0 Inbox/DoseLogic-หน้าแรก/apps-script-เก็บข้อมูล/Code.gs in the owner's PARA).
+       Never sends patient details. Off on file://, in headless or automated browsers and with ?nolog in the address.
+       The defaults shown on opening are not logged; only orders someone typed. Any failure is ignored. */
+    const LOG_URL = 'https://script.google.com/macros/s/AKfycbyelczLFGoo5j3icdHnCxg07gW3FbS3s95XX7grzbulcAfHgzEh0SByhl44W-89bs580A/exec';
+    const LOG_VER = '5.6';
+    var logTimer = 0, logLastKey = '', logUserAt = 0;
+    function logOn() {
+      return !!LOG_URL && location.protocol === 'https:' && !navigator.webdriver
+        && !/HeadlessChrome/.test(navigator.userAgent) && !/[?&]nolog\b/.test(location.search);
+    }
+    function logDevice() {
+      try {
+        let id = localStorage.getItem('dl-dev');
+        if (!id) { id = Math.random().toString(36).slice(2, 10); localStorage.setItem('dl-dev', id); }
+        return id;
+      } catch { return ''; }
+    }
+    function logSend(kind, data) {
+      if (!logOn()) return;
+      try {
+        const body = JSON.stringify(Object.assign({ v: 1, kind, dev: logDevice(), ver: LOG_VER }, data));
+        fetch(LOG_URL, { method: 'POST', mode: 'no-cors', keepalive: true, headers: { 'Content-Type': 'text/plain' }, body }).catch(() => {});
+      } catch { /* never block the page */ }
+    }
+    function logVisit() {
+      // the footer tells people about the log only once the log is really on
+      if (logOn()) { const n = document.getElementById('logNotice'); if (n) n.hidden = false; }
+      let ref = 'เปิดตรง';
+      try { ref = window.self !== window.top ? 'ฝังใน Sites' : (document.referrer ? new URL(document.referrer).hostname : 'เปิดตรง'); } catch { ref = 'ฝังใน Sites'; }
+      logSend('visit', { tool: 'atb', w: window.innerWidth, ref });
+    }
+    function logSnapshot() {
+      const val = id => document.getElementById(id).value.trim();
+      const num = s => { const x = parseFloat(s); return Number.isFinite(x) ? x : ''; };
+      const f = FREQUENCY_OPTIONS.find(o => o.value === parseInt(val('frequency')));
+      return {
+        drug: val('drugName'), dose: val('dose'), unit: val('unit'), freq: f ? f.label : val('frequency'),
+        durType: durationType === 'days' ? 'วัน' : 'dose', d1: num(val('duration1')), d2: num(val('duration2')), total: schedule.length,
+      };
+    }
+    // A calculation is logged once the numbers have stayed the same for 8 seconds, so typing is not logged key by key.
+    function logQueue() {
+      if (!logUserAt) return;
+      let snap;
+      try { snap = logSnapshot(); } catch { return; }
+      clearTimeout(logTimer);
+      logTimer = setTimeout(() => {
+        const key = JSON.stringify(snap);
+        if (key === logLastKey) return;
+        logLastKey = key;
+        logSend('atb', Object.assign({ event: 'คำนวณ' }, snap));
+      }, 8000);
+    }
+    function logCancel() { clearTimeout(logTimer); }
+    function logCopy(what) {
+      try { logSend('atb', Object.assign({ event: what }, logSnapshot())); } catch { /* ignore */ }
+    }
+
     // Initialize
     window.addEventListener('DOMContentLoaded', () => {
       initializeDrugList();
@@ -1834,6 +1894,9 @@
       setCheckToNow();
       setupEventListeners();
       calculate();
+      // anything the person types or picks counts as their own order
+      ['input', 'change'].forEach(t => document.addEventListener(t, () => { logUserAt = Date.now(); }, true));
+      logVisit();
     });
 
     function initializeDrugList() {
@@ -1937,6 +2000,7 @@
       document.getElementById('headerDrugName').textContent = 'ยังไม่ได้เลือกยา';
       document.getElementById('resetBar').classList.add('hidden');
       scheduleExpanded = false;
+      logUserAt = 0; // the defaults after a reset are not someone's order
       calculate();
       setCheckToNow();
       showToast('ล้างข้อมูลแล้ว');
@@ -2071,6 +2135,7 @@
       if (!v.ok) {
         updateUI();
         calculateProgress();
+        logCancel();
         return;
       }
 
@@ -2092,6 +2157,7 @@
       }
 
       updateUI();
+      logQueue();
     }
 
     function calculateProgress() {
@@ -2350,6 +2416,7 @@
     // Copy functions
     function copyNote() {
       copyToClipboard(generatePharmacistNote(), 'copyNoteBtn');
+      logCopy('คัดลอก note');
     }
 
     function copyProgress() {
@@ -2375,6 +2442,7 @@
 รวมทั้งหมด: ${schedule.length} Doses`;
       
       copyToClipboard(text, 'copyProgressBtn');
+      logCopy('คัดลอก Progress');
     }
 
     function copySchedule() {
@@ -2393,6 +2461,7 @@
       });
       
       copyToClipboard(text, 'copyScheduleBtn');
+      logCopy('คัดลอกตาราง');
     }
 
     function copyToClipboard(text, btnId) {
