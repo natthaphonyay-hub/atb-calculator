@@ -1667,7 +1667,7 @@
         <div class="footer-info">
           <div class="footer-info-label">พัฒนาโดย</div>
           <div class="footer-info-org">DoseLogic</div>
-          <div class="footer-info-version">Version 5.2 | November 2026</div>
+          <div class="footer-info-version">Version 5.3 | November 2026</div>
         </div>
       </div>
       <div class="footer-divider">
@@ -1892,11 +1892,8 @@
       const val = id => document.getElementById(id).value.trim();
       const missing = [];
       const errors = [];
-      if (!val('drugName')) missing.push('ชื่อยา');
-      const dose = val('dose');
-      if (!dose) missing.push('ขนาดยา');
-      else if (!(Number(dose.replace(/,/g, '')) > 0)) errors.push('ขนาดยาต้องเป็นตัวเลขที่มากกว่า 0');
-      if (!val('unit')) missing.push('หน่วย');
+      // Drug name, dose and unit stay optional, as in v5.0: the note shows "..." so the pharmacist
+      // can count an unusual drug and type its name after pasting. Only what changes the dates is checked.
       if (!val('startDate')) missing.push('วันที่เริ่ม');
       if (!val('startTime')) missing.push('เวลาเริ่ม');
       const unitWord = durationType === 'days' ? 'วัน' : 'dose';

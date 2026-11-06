@@ -32,10 +32,7 @@ def shown(real, first):
 
 def validate(c):
     missing, errors = [], []
-    if not c['drug'].strip(): missing.append('ชื่อยา')
-    if not c['dose'].strip(): missing.append('ขนาดยา')
-    elif not (js_number(c['dose'].replace(',', '')) > 0): errors.append('ขนาดยาต้องเป็นตัวเลขที่มากกว่า 0')
-    if not c['unit'].strip(): missing.append('หน่วย')
+    # drug, dose and unit are optional (owner's call): the note shows '...' instead
     if not c['startDate']: missing.append('วันที่เริ่ม')
     if not c['startTime']: missing.append('เวลาเริ่ม')
     unit_word = 'วัน' if c['mode'] == 'days' else 'dose'
