@@ -2085,14 +2085,10 @@
     function getAdminTimesString() {
       const [h, m] = (document.getElementById('startTime').value || '').split(':').map(Number);
       const freq = parseInt(document.getElementById('frequency').value);
-      const label = t => m > 0 ? `${t}.${String(m).padStart(2, '0')}` : String(t);
-      if (freq >= 24) return label(h);
+      if (freq >= 24) return m > 0 ? `${h}.${String(m).padStart(2, '0')}` : String(h);
       const times = [];
-      for (let i = 0; i < 24 / freq; i++) {
-        const t = (h + i * freq) % 24;
-        times.push(i > 0 && t === 0 && m === 0 ? '23.59' : label(t));
-      }
-      return times.join(', ');
+      for (let i = 0; i < 24 / freq; i++) times.push((h + i * freq) % 24);
+      return times.map(t => m > 0 ? `${t}.${String(m).padStart(2, '0')}` : t).join(', ');
     }
 
     function calculateCheckpoint(val) {

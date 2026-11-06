@@ -79,7 +79,7 @@ def expected(c, sep):
     lab = lambda t: f"{t}.{m:02d}" if m > 0 else str(t)
     if freq >= 24: admin = lab(h)
     else:
-        admin = ', '.join('23.59' if (i > 0 and (h + i * freq) % 24 == 0 and m == 0) else lab((h + i * freq) % 24) for i in range(24 // freq))
+        admin = ', '.join(lab((h + i * freq) % 24) for i in range(24 // freq))   # bracket times keep 0 (owner's call)
     drugstr = ' '.join(v for v in (c['drug'], c['dose'], c['unit']) if v.strip())
     note = f"Pharmacist note\n\t- นับยา {drugstr or '...'} IV {FREQ_LABEL[freq]} [ {admin} ]\n"
     note += f"\t\t- {'เริ่มได้รับยา Dose แรก'.ljust(30)} วันที่ {full_date(start)} เวลา {hhmm(start)} น.\n"

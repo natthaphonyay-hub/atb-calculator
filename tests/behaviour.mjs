@@ -66,7 +66,7 @@ await ev(`typeIn('dose', ''); typeIn('unit', ''); typeIn('drugName', 'Meropenem'
 ok('switching between listed drugs refills only app-filled values', await ev(`$('dose').value === '2' && $('unit').value === 'g'`));
 await ev(`changeIn('startDate', '2026-11-06'); changeIn('startTime', '08:00'); changeIn('frequency', '8'); changeIn('checkDate', '2026-11-08'); changeIn('checkTime', '10:00')`);
 ok('valid order shows the note and table', await ev(`!$('noteSection').classList.contains('hidden') && $('formStatus').textContent === ''`));
-ok('midnight dose shows 23.59 in admin times', await ev(`$('noteContent').textContent.includes('[ 8, 16, 23.59 ]')`), await ev(`$('noteContent').textContent.split(String.fromCharCode(10))[1]`));
+ok('bracket admin times keep 0 at midnight', await ev(`$('noteContent').textContent.includes('[ 8, 16, 0 ]')`), await ev(`$('noteContent').textContent.split(String.fromCharCode(10))[1]`));
 await ev(`typeIn('duration2', '6')`);
 ok('note updates while typing a duration (no blur needed)', await ev(`$('noteContent').textContent.includes('ครบ 6 วัน Dose สุดท้าย')`));
 await ev(`typeIn('duration2', '7')`);
