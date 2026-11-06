@@ -53,15 +53,15 @@ await ev(HELP);
 const MERO = `order({ drug: 'Meropenem' })`;
 const shots = [
   { name: 'a01-home', js: `order({}); setv('startDate', '2026-11-06', 'change'); setv('startTime', '10:00', 'change'); mark('#resetBtn', 1, 'IR'); mark('.manual-link', 2, -14, -14)`, clip: ['header.header', '#inputCard .card-header', '.form-row.triple'], pad: 0 },
-  { name: 'a02-drug', js: `${MERO}; mark('#drugName', 1); mark('#dose', 2); mark('#unit', 3); mark('#autofillHint', 4)`, clip: ['#inputCard .card-header', '#autofillHint'] },
-  { name: 'a03-start', js: `${MERO}; mark('#startDate', 1); mark('#startTime', 2); mark('#frequency', 3)`, clip: ['label[for=startDate]', '#frequency'] },
-  { name: 'a04-duration', js: `${MERO}; mark('.duration-toggle', 1, 'R'); mark('#duration1', 2); mark('#duration2', 3)`, clip: ['.duration-box'] },
-  { name: 'a05-error', js: `${MERO}; setv('duration1', '9'); mark('#duration1', 1); mark('#formStatus', 2)`, clip: ['.duration-box', '#formStatus'] },
+  { name: 'a02-drug', js: `${MERO}; mark('#drugName', 1, 'IR'); mark('#dose', 2, 'IR'); mark('#unit', 3, 'IR'); markText('#autofillHint', 'ขนาดยา', 4)`, clip: ['#inputCard .card-header', '#autofillHint'] },
+  { name: 'a03-start', js: `${MERO}; mark('#startDate', 1, 130, -18); mark('#startTime', 2, 125, -18); mark('#frequency', 3, 145, -18)`, clip: ['label[for=startDate]', '#frequency'] },
+  { name: 'a04-duration', js: `${MERO}; mark('.duration-toggle', 1, 'R'); mark('#duration1', 2, 6, 15); mark('#duration2', 3, 6, 15)`, clip: ['.duration-box'] },
+  { name: 'a05-error', js: `${MERO}; setv('duration1', '9'); mark('#duration1', 1, 6, 15); mark('#formStatus', 2, 40, -16)`, clip: ['.duration-box', '#formStatus'] },
   { name: 'a06-note', js: `${MERO}; markText('#noteContent', 'นับยา', 1); markText('#noteContent', 'เริ่มได้รับยา', 2); markText('#noteContent', 'ครบ 5 วัน', 3); markText('#noteContent', 'ครบ 7 วัน', 4); mark('#copyNoteBtn', 5)`, clip: ['#noteSection'] },
   { name: 'a07-progress', js: `${MERO}; mark('.progress-check-inputs', 1); mark('.btn-now', 2, 'R'); mark('.progress-ring-container', 3); mark('.progress-stats', 4); mark('.progress-status', 5); mark('#copyProgressBtn', 6)`, clip: ['#progressSection'] },
   { name: 'a08-schedule', js: `${MERO}; mark('.schedule-summary', 1); mark('#scheduleBody tr.day-row', 2); mark('.dose-badge.checkpoint', 3, 'R'); mark('#scheduleBody tr.gap-row', 4); mark('#scheduleToggle', 5); mark('#copyScheduleBtn', 6)`, clip: ['#scheduleSection'] },
   { name: 'a09-schedule-full', js: `order({ drug: 'Meropenem', expand: true }); markText('#scheduleBody tr:nth-child(4) .dose-time-cell', 'น.', 1, 30)`, clip: ['#scheduleSection .schedule-table thead', '#scheduleBody tr:nth-child(8)'] },
-  { name: 'a10-doses', js: `order({ drug: 'Cefazolin', mode: 'doses', d1: '', d2: '3' }); mark('#btnDoses', 1, 'R'); mark('#duration2', 2); markText('#noteContent', 'Dose ที่ 3', 3)`, clip: ['.duration-box', '#noteSection'] },
+  { name: 'a10-doses', js: `order({ drug: 'Cefazolin', mode: 'doses', d1: '', d2: '3' }); mark('#btnDoses', 1, 'R'); mark('#duration2', 2, 6, 15); markText('#noteContent', 'Dose ที่ 3', 3)`, clip: ['.duration-box', '#noteSection'] },
   { name: 'a11-unusual', js: `order({}); markText('#noteContent', '...', 1, -40)`, clip: ['#noteSection'] },
   { name: 'a12-reset', js: `${MERO}; askReset(); mark('#resetBtn', 1, 'IR'); mark('#resetBar .btn-danger', 2, -16, -18)`, clip: ['header.header'], pad: 0 },
 ];

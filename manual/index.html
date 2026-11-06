@@ -27,8 +27,9 @@
   .tip { background: #fefce8; border-left: 3px solid #ca8a04; padding: 2mm 3mm; border-radius: 0 2mm 2mm 0; margin-top: 2mm; font-size: 10pt; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
   .step { border: 1px solid #e2e8f0; border-radius: 3mm; padding: 3mm; break-inside: avoid; }
-  .step img { margin-top: 2mm; max-height: 92mm; object-fit: cover; object-position: left top; }
+  .step img { margin-top: 2mm; max-height: 92mm; object-fit: contain; object-position: left top; }
   .case img { max-height: 40mm; object-fit: cover; object-position: left top; }
+  .case img.full { object-position: left bottom; }
   .big { font-size: 13pt; font-weight: 700; color: #0e7490; }
   .cover-top { display: grid; grid-template-columns: 1fr 42mm; gap: 6mm; align-items: center; margin-bottom: 6mm; }
   #qr img, #qr canvas { width: 38mm !important; height: 38mm !important; border: 0; }
@@ -288,7 +289,7 @@
     <h3>4 ยาที่ไม่มีในรายการ</h3>
     <p>เว้นชื่อยาไว้ ใส่วันเวลาเริ่ม ความถี่ และระยะเวลาตามปกติ</p>
     <p><b>ผล:</b> note เขียน "นับยา ... IV q 8 hr" คัดลอกไปแล้วแก้ชื่อยาเอง</p></div></div>
-  <div class="case"><img src="img/a05-error.png" alt=""><div>
+  <div class="case"><img class="full" src="img/a05-error.png" alt=""><div>
     <h3>5 กรอกผิด แอปบอกก่อน</h3>
     <p>ใส่ระยะที่ 1 = 9 วัน มากกว่าระยะที่ 2 = 7 วัน</p>
     <p><b>ผล:</b> แอปบอกว่า "ระยะที่ 1 (Checkpoint) ต้องไม่มากกว่าระยะที่ 2 (Total/End)" และยังไม่ออก note</p></div></div>
