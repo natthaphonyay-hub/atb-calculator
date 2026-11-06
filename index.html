@@ -1449,19 +1449,6 @@
     input, textarea { caret-color: var(--primary); }
     a { text-underline-offset: 3px; }
 
-    /* ---------- computer screens: order on the left and the note it produces beside it
-       (the note column grows to 680 px so its lines do not wrap); dose progress and schedule full width below.
-       Same order as the page source, so Tab moves in reading order. ---------- */
-    @media (min-width: 1024px) {
-      .header-inner, .footer-inner { max-width: 1200px; }
-      main { max-width: 1240px; display: grid; grid-template-columns: minmax(400px, 1fr) minmax(0, 680px); gap: 20px; align-items: start; }
-      main > * { grid-column: 1 / -1; }
-      main > #inputCard { grid-column: 1; }
-      main > #noteSection { grid-column: 2; align-self: stretch; }
-      /* progress spans the full width: four numbers in one row, check-date fields kept to a sensible width */
-      .progress-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-      .progress-check-inputs { max-width: 640px; }
-    }
   </style>
 </head>
 <body>
