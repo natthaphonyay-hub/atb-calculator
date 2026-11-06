@@ -3,6 +3,7 @@
 เว็บนับ dose ยาปฏิชีวนะชนิดฉีด บอกว่าผู้ป่วยได้รับยาไปแล้วกี่ dose เหลืออีกกี่ dose และ dose สุดท้ายตรงกับวันเวลาไหน พร้อม Pharmacist note ให้คัดลอกไปวางในเวชระเบียน
 
 - เปิดใช้: https://natthaphonyay-hub.github.io/atb-calculator/
+- คู่มือการใช้: https://natthaphonyay-hub.github.io/atb-calculator/manual/
 - เครื่องมือชุดเดียวกัน: Drip Calculator นับจำนวน amp ยาหยดต่อ 1 order https://natthaphonyay-hub.github.io/drip-calculator/
 
 ## ใช้งาน
@@ -25,7 +26,7 @@
 - ใช้ประมาณการเท่านั้น ควรใช้วิจารณญาณทางคลินิกประกอบ
 - ปุ่มรีเซ็ตจะถามยืนยันในหน้าเว็บก่อนล้างข้อมูล ข้อความแจ้งทุกอย่างขึ้นในหน้าเว็บ ใช้ได้ในกรอบของ Google Sites
 - ไม่มีการเก็บข้อมูลผู้ป่วยหรือค่าที่กรอกไว้ในเครื่อง ปิดหน้าแล้วข้อมูลหาย
-- Version 5.3 (November 2026)
+- Version 5.4 (November 2026)
 
 ## วางในหน้า Google Sites
 
