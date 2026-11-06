@@ -1116,6 +1116,220 @@
     .card {
       animation: fadeInUp 0.5s ease-out;
     }
+
+    /* v5.1: in-page confirm and messages, input checks, schedule grouped by day */
+    .btn:disabled,
+    .btn:disabled:hover {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .reset-bar {
+      max-width: 900px;
+      margin: 12px auto 0;
+      background: #ffffff;
+      color: var(--text-primary);
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.18);
+    }
+
+    .reset-bar-text {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .reset-bar-actions {
+      display: flex;
+      gap: 8px;
+      margin-left: auto;
+    }
+
+    .reset-bar .btn {
+      min-height: 44px;
+      padding: 10px 16px;
+    }
+
+    .btn-danger {
+      background: #b91c1c;
+      color: #ffffff;
+    }
+
+    .btn-danger:hover {
+      background: #991b1b;
+    }
+
+    .field-hint {
+      margin-top: -6px;
+      padding: 8px 12px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #92400e;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: var(--radius-sm);
+    }
+
+    .form-status {
+      padding: 12px 14px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #334155;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+
+    .form-status:empty {
+      display: none;
+    }
+
+    .form-status.error {
+      color: #b91c1c;
+      background: #fef2f2;
+      border-color: #fecaca;
+    }
+
+    .form-status-title {
+      font-weight: 600;
+    }
+
+    .form-status ul {
+      margin: 4px 0 0 20px;
+    }
+
+    .unit-input {
+      position: relative;
+    }
+
+    .unit-input input {
+      padding: 14px 52px;
+    }
+
+    .unit-suffix {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      font-weight: 600;
+      color: #92400e;
+      pointer-events: none;
+    }
+
+    .duration-input-group:last-child .unit-suffix {
+      color: var(--primary-dark);
+    }
+
+    .schedule-table tr.day-row th {
+      width: auto;
+      padding: 8px 16px;
+      text-align: left;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0;
+      text-transform: none;
+      color: #334155;
+      background: #f1f5f9;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .schedule-table tr.gap-row td {
+      padding: 6px 16px;
+      text-align: center;
+      font-size: 13px;
+      color: #64748b;
+      background: #ffffff;
+    }
+
+    .schedule-table td.dose-time-cell {
+      font-weight: 600;
+      color: #155e75;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .dose-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .dose-badge.next {
+      background: #1d4ed8;
+    }
+
+    .dose-badge.checkpoint {
+      background: #c2410c;
+    }
+
+    .dose-badge.end {
+      background: #b91c1c;
+    }
+
+    .dose-badge.received {
+      color: #047857;
+    }
+
+    .dose-badge.waiting {
+      color: #64748b;
+    }
+
+    .schedule-toggle-wrap {
+      padding: 14px 20px 20px;
+    }
+
+    .btn-outline:hover {
+      color: var(--primary-dark);
+    }
+
+    .schedule-card .btn-copy {
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .toast {
+      position: fixed;
+      top: 92px;
+      left: 50%;
+      z-index: 300;
+      width: max-content;
+      max-width: min(92vw, 440px);
+      padding: 12px 16px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #ffffff;
+      background: #0f172a;
+      border-radius: 12px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.28);
+      opacity: 0;
+      visibility: hidden;
+      transform: translate(-50%, -8px);
+      transition: opacity 0.2s ease-out, transform 0.2s ease-out, visibility 0.2s;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(-50%, 0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .schedule-table tr.next-dose {
+        animation: none;
+      }
+
+      .toast {
+        transition: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1135,11 +1349,18 @@
         </div>
       </div>
       <div class="header-actions">
-        <button class="header-btn" onclick="resetForm()" title="รีเซ็ต">
+        <button id="resetBtn" type="button" class="header-btn" onclick="askReset()" title="ล้างข้อมูลที่กรอก" aria-label="ล้างข้อมูลที่กรอก">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
           </svg>
         </button>
+      </div>
+    </div>
+    <div id="resetBar" class="reset-bar hidden" role="group" aria-labelledby="resetBarText">
+      <span id="resetBarText" class="reset-bar-text">ล้างข้อมูลที่กรอกทั้งหมด?</span>
+      <div class="reset-bar-actions">
+        <button id="resetCancelBtn" type="button" class="btn btn-outline" onclick="cancelReset()">ยกเลิก</button>
+        <button type="button" class="btn btn-danger" onclick="doReset()">ล้างข้อมูล</button>
       </div>
     </div>
   </header>
@@ -1157,20 +1378,12 @@
           </div>
           ข้อมูลการสั่งยา
         </div>
-        <div style="display: flex; gap: 8px;">
-          <button class="btn btn-outline" onclick="savePreset()" style="padding: 8px 12px; font-size: 12px;" title="บันทึก">
-            <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
-          </button>
-          <button class="btn btn-outline" onclick="loadPreset()" style="padding: 8px 12px; font-size: 12px;" title="โหลด">
-            <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-          </button>
-        </div>
       </div>
       <div class="card-body">
         <div class="form-grid">
           <div class="form-row triple">
             <div class="form-group">
-              <label class="form-label">
+              <label class="form-label" for="drugName">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
                 ชื่อยา (Drug Name)
               </label>
@@ -1178,11 +1391,11 @@
               <datalist id="drug-list"></datalist>
             </div>
             <div class="form-group">
-              <label class="form-label">ขนาดยา (Dose)</label>
+              <label class="form-label" for="dose">ขนาดยา (Dose)</label>
               <input type="text" id="dose" class="form-input" placeholder="Ex. 2">
             </div>
             <div class="form-group">
-              <label class="form-label">หน่วย (Unit)</label>
+              <label class="form-label" for="unit">หน่วย (Unit)</label>
               <input type="text" id="unit" list="unit-list" class="form-input" placeholder="Ex. g">
               <datalist id="unit-list">
                 <option value="g">
@@ -1194,16 +1407,18 @@
             </div>
           </div>
 
+          <p id="autofillHint" class="field-hint hidden">ขนาดยาและหน่วยเติมให้จากรายการยา ตรวจให้ตรงกับคำสั่งแพทย์</p>
+
           <div class="form-row">
             <div class="form-group">
-              <label class="form-label">
+              <label class="form-label" for="startDate">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                 วันที่เริ่ม (Date)
               </label>
               <input type="date" id="startDate" class="form-input">
             </div>
             <div class="form-group">
-              <label class="form-label">
+              <label class="form-label" for="startTime">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 เวลาเริ่ม (Time)
               </label>
@@ -1212,7 +1427,7 @@
           </div>
 
           <div class="form-group full">
-            <label class="form-label">
+            <label class="form-label" for="frequency">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
               ความถี่ (Frequency)
             </label>
@@ -1231,22 +1446,30 @@
               <div class="duration-header">
                 <span class="duration-label">ระยะเวลาการรักษา (Duration)</span>
                 <div class="duration-toggle">
-                  <button id="btnDays" class="duration-toggle-btn active" onclick="setDurationType('days')">วัน</button>
-                  <button id="btnDoses" class="duration-toggle-btn" onclick="setDurationType('doses')">Doses</button>
+                  <button id="btnDays" type="button" class="duration-toggle-btn active" aria-pressed="true" onclick="setDurationType('days')">วัน</button>
+                  <button id="btnDoses" type="button" class="duration-toggle-btn" aria-pressed="false" onclick="setDurationType('doses')">Doses</button>
                 </div>
               </div>
               <div class="duration-inputs">
                 <div class="duration-input-group">
-                  <label>ระยะที่ 1 (Checkpoint)</label>
-                  <input type="number" id="duration1" min="1" value="5">
+                  <label for="duration1">ระยะที่ 1 (Checkpoint)</label>
+                  <div class="unit-input">
+                    <input type="number" id="duration1" min="1" step="1" inputmode="numeric" value="5">
+                    <span class="unit-suffix" aria-hidden="true">วัน</span>
+                  </div>
                 </div>
                 <div class="duration-input-group">
-                  <label>ระยะที่ 2 (Total/End)</label>
-                  <input type="number" id="duration2" min="1" value="7">
+                  <label for="duration2">ระยะที่ 2 (Total/End)</label>
+                  <div class="unit-input">
+                    <input type="number" id="duration2" min="1" step="1" inputmode="numeric" value="7">
+                    <span class="unit-suffix" aria-hidden="true">วัน</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+
+          <div id="formStatus" class="form-status" role="status" aria-live="polite"></div>
         </div>
       </div>
     </div>
@@ -1277,7 +1500,7 @@
           </div>
           คำนวณ Dose ที่ได้รับ/เหลือ
         </div>
-        <button id="toggleProgressBtn" class="toggle-btn" onclick="toggleProgressSection()">
+        <button id="toggleProgressBtn" type="button" class="toggle-btn" aria-expanded="true" aria-controls="progressContent" onclick="toggleProgressSection()">
           <span id="toggleProgressText">ซ่อน</span>
         </button>
       </div>
@@ -1288,8 +1511,8 @@
             วันที่ต้องการตรวจสอบ (Check Date)
           </div>
           <div class="progress-check-inputs">
-            <input type="date" id="checkDate">
-            <input type="time" id="checkTime">
+            <input type="date" id="checkDate" aria-label="วันที่ตรวจสอบ">
+            <input type="time" id="checkTime" aria-label="เวลาที่ตรวจสอบ">
             <button class="btn-now" onclick="setCheckToNow()">ตอนนี้</button>
           </div>
         </div>
@@ -1410,17 +1633,21 @@
           <thead>
             <tr>
               <th>Dose</th>
-              <th>วันที่</th>
               <th>เวลา</th>
-              <th class="hidden-mobile">สถานะ</th>
+              <th>สถานะ</th>
             </tr>
           </thead>
           <tbody id="scheduleBody"></tbody>
         </table>
       </div>
+      <div class="schedule-toggle-wrap">
+        <button id="scheduleToggle" type="button" class="btn btn-outline btn-full hidden" aria-expanded="false" aria-controls="scheduleBody" onclick="toggleSchedule()">แสดงทุก dose</button>
+      </div>
     </div>
 
   </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <!-- Footer -->
   <footer class="footer">
@@ -1440,7 +1667,7 @@
         <div class="footer-info">
           <div class="footer-info-label">พัฒนาโดย</div>
           <div class="footer-info-org">DoseLogic</div>
-          <div class="footer-info-version">Version 5.0 | February 2026</div>
+          <div class="footer-info-version">Version 5.1 | November 2026</div>
         </div>
       </div>
       <div class="footer-divider">
@@ -1475,11 +1702,13 @@
     let durationType = 'days';
     let schedule = [];
     let progressSectionVisible = true;
+    let scheduleExpanded = false;
+    let autoFilledFor = null;
+    let toastTimer = null;
 
     // Initialize
     window.addEventListener('DOMContentLoaded', () => {
       initializeDrugList();
-      initializeDateTime();
       setCheckToNow();
       setupEventListeners();
       calculate();
@@ -1492,15 +1721,6 @@
         opt.value = drug.name;
         datalist.appendChild(opt);
       });
-    }
-
-    function initializeDateTime() {
-      const now = new Date();
-      let h = now.getHours() - 1;
-      if (h % 2 !== 0) h--;
-      if (h < 0) { h += 24; now.setDate(now.getDate() - 1); }
-      document.getElementById('startDate').value = formatDateInput(now);
-      document.getElementById('startTime').value = `${String(h).padStart(2, '0')}:00`;
     }
 
     function formatDateInput(date) {
@@ -1518,79 +1738,115 @@
       progressSectionVisible = !progressSectionVisible;
       document.getElementById('progressContent').classList.toggle('hidden', !progressSectionVisible);
       document.getElementById('toggleProgressText').textContent = progressSectionVisible ? 'ซ่อน' : 'แสดง';
+      document.getElementById('toggleProgressBtn').setAttribute('aria-expanded', String(progressSectionVisible));
     }
 
     function setupEventListeners() {
       document.getElementById('drugName').addEventListener('input', handleDrugNameChange);
       ['dose', 'unit'].forEach(id => {
-        document.getElementById(id).addEventListener('input', calculate);
+        document.getElementById(id).addEventListener('input', () => {
+          autoFilledFor = null;
+          document.getElementById('autofillHint').classList.add('hidden');
+          calculate();
+        });
       });
       ['startDate', 'startTime', 'frequency', 'duration1', 'duration2'].forEach(id => {
-        document.getElementById(id).addEventListener('change', () => {
-          calculate();
-          calculateProgress();
-        });
+        ['input', 'change'].forEach(type => document.getElementById(id).addEventListener(type, calculate));
       });
       ['checkDate', 'checkTime'].forEach(id => {
         document.getElementById(id).addEventListener('change', calculateProgress);
+      });
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && !document.getElementById('resetBar').classList.contains('hidden')) cancelReset();
       });
     }
 
     function handleDrugNameChange() {
       const val = document.getElementById('drugName').value;
       const found = DRUG_DATA.find(d => d.name === val);
-      if (found) {
-        document.getElementById('dose').value = found.dose;
-        document.getElementById('unit').value = found.unit;
+      const doseEl = document.getElementById('dose');
+      const unitEl = document.getElementById('unit');
+      if (found && found.name !== autoFilledFor) {
+        // Fill only empty fields or fields this app filled before; never overwrite what the pharmacist typed.
+        const free = autoFilledFor !== null || (!doseEl.value.trim() && !unitEl.value.trim());
+        if (free) {
+          doseEl.value = found.dose;
+          unitEl.value = found.unit;
+          autoFilledFor = found.name;
+        }
+      } else if (!found && autoFilledFor !== null) {
+        doseEl.value = '';
+        unitEl.value = '';
+        autoFilledFor = null;
       }
+      document.getElementById('autofillHint').classList.toggle('hidden', autoFilledFor === null);
       document.getElementById('headerDrugName').textContent = val || 'ยังไม่ได้เลือกยา';
       calculate();
-      calculateProgress();
     }
 
-    function resetForm() {
-      if (!confirm('ต้องการรีเซ็ตฟอร์มทั้งหมดหรือไม่?')) return;
-      ['drugName', 'dose', 'unit'].forEach(id => document.getElementById(id).value = '');
-      initializeDateTime();
+    function askReset() {
+      document.getElementById('resetBar').classList.remove('hidden');
+      document.getElementById('resetCancelBtn').focus();
+    }
+
+    function cancelReset() {
+      document.getElementById('resetBar').classList.add('hidden');
+      document.getElementById('resetBtn').focus();
+    }
+
+    function doReset() {
+      ['drugName', 'dose', 'unit', 'startDate', 'startTime'].forEach(id => document.getElementById(id).value = '');
+      autoFilledFor = null;
+      document.getElementById('autofillHint').classList.add('hidden');
       document.getElementById('frequency').value = '8';
       document.getElementById('duration1').value = '5';
       document.getElementById('duration2').value = '7';
+      applyDurationType('days');
       document.getElementById('headerDrugName').textContent = 'ยังไม่ได้เลือกยา';
+      document.getElementById('resetBar').classList.add('hidden');
+      scheduleExpanded = false;
       calculate();
       setCheckToNow();
+      showToast('ล้างข้อมูลแล้ว');
+      document.getElementById('drugName').focus();
     }
 
-    function savePreset() {
-      localStorage.setItem('atbPreset', JSON.stringify({
-        drugName: document.getElementById('drugName').value,
-        dose: document.getElementById('dose').value,
-        unit: document.getElementById('unit').value,
-        frequency: document.getElementById('frequency').value,
-        duration1: document.getElementById('duration1').value,
-        duration2: document.getElementById('duration2').value,
-        durationType
-      }));
-      alert('บันทึกค่าเรียบร้อยแล้ว!');
-    }
-
-    function loadPreset() {
-      const p = JSON.parse(localStorage.getItem('atbPreset') || 'null');
-      if (!p) { alert('ไม่พบข้อมูลที่บันทึกไว้'); return; }
-      ['drugName', 'dose', 'unit', 'frequency', 'duration1', 'duration2'].forEach(k => {
-        if (document.getElementById(k)) document.getElementById(k).value = p[k] || '';
+    function applyDurationType(type) {
+      durationType = type;
+      [['btnDays', 'days'], ['btnDoses', 'doses']].forEach(([id, t]) => {
+        const b = document.getElementById(id);
+        b.classList.toggle('active', type === t);
+        b.setAttribute('aria-pressed', String(type === t));
       });
-      durationType = p.durationType || 'days';
-      setDurationType(durationType);
-      handleDrugNameChange();
-      alert('โหลดค่าเรียบร้อยแล้ว!');
+      document.querySelectorAll('.unit-suffix').forEach(el => el.textContent = type === 'days' ? 'วัน' : 'dose');
     }
 
     function setDurationType(type) {
-      durationType = type;
-      document.getElementById('btnDays').classList.toggle('active', type === 'days');
-      document.getElementById('btnDoses').classList.toggle('active', type === 'doses');
+      if (type === durationType) return;
+      // Convert the numbers so the course stays the same; clear a value that has no whole-day equivalent.
+      const freq = parseInt(document.getElementById('frequency').value);
+      let converted = false;
+      let cleared = false;
+      ['duration1', 'duration2'].forEach(id => {
+        const el = document.getElementById(id);
+        const raw = el.value.trim();
+        if (!/^\d+$/.test(raw) || Number(raw) < 1) return;
+        const n = Number(raw);
+        if (type === 'doses') {
+          el.value = String(Math.ceil((24 / freq) * n));
+          converted = true;
+        } else if ((n * freq) % 24 === 0) {
+          el.value = String((n * freq) / 24);
+          converted = true;
+        } else {
+          el.value = '';
+          cleared = true;
+        }
+      });
+      applyDurationType(type);
+      if (cleared) showToast('จำนวน dose นี้แปลงเป็นวันเต็มไม่ได้ ใส่ระยะเวลาใหม่เป็นจำนวนวัน');
+      else if (converted) showToast(type === 'doses' ? 'แปลงระยะเวลาเป็นจำนวน dose ให้แล้ว' : 'แปลงระยะเวลาเป็นจำนวนวันให้แล้ว');
       calculate();
-      calculateProgress();
     }
 
     function getStartDateTime() {
@@ -1605,22 +1861,103 @@
       return d && t ? new Date(`${d}T${t}`) : null;
     }
 
+    // A dose the app works out that falls on 00:00 is shown as 23:59 of the day before (ward convention).
+    // The first dose keeps the time the pharmacist entered.
+    function shownDoseTime(date, isFirstDose) {
+      if (!isFirstDose && date.getHours() === 0 && date.getMinutes() === 0) {
+        return new Date(date.getTime() - 60000);
+      }
+      return new Date(date.getTime());
+    }
+
+    function readDuration(id) {
+      const raw = document.getElementById(id).value.trim();
+      if (raw === '') return { empty: true, ok: false, n: NaN };
+      const n = Number(raw);
+      return { empty: false, ok: Number.isInteger(n) && n >= 1, n };
+    }
+
+    function validateInputs() {
+      const val = id => document.getElementById(id).value.trim();
+      const missing = [];
+      const errors = [];
+      if (!val('drugName')) missing.push('ชื่อยา');
+      const dose = val('dose');
+      if (!dose) missing.push('ขนาดยา');
+      else if (!(Number(dose.replace(/,/g, '')) > 0)) errors.push('ขนาดยาต้องเป็นตัวเลขที่มากกว่า 0');
+      if (!val('unit')) missing.push('หน่วย');
+      if (!val('startDate')) missing.push('วันที่เริ่ม');
+      if (!val('startTime')) missing.push('เวลาเริ่ม');
+      const unitWord = durationType === 'days' ? 'วัน' : 'dose';
+      const max = durationType === 'days' ? 365 : 2190;
+      const r1 = readDuration('duration1');
+      const r2 = readDuration('duration2');
+      if (r2.empty) missing.push('ระยะที่ 2 (Total/End)');
+      [[r1, 'ระยะที่ 1'], [r2, 'ระยะที่ 2']].forEach(([r, name]) => {
+        if (r.empty) return;
+        if (!r.ok) errors.push(`${name} ต้องเป็นจำนวนเต็มตั้งแต่ 1 ${unitWord} ขึ้นไป`);
+        else if (r.n > max) errors.push(`${name} ต้องไม่เกิน ${max} ${unitWord}`);
+      });
+      if (r1.ok && r2.ok && r1.n <= max && r2.n <= max && r1.n > r2.n) {
+        errors.push('ระยะที่ 1 (Checkpoint) ต้องไม่มากกว่าระยะที่ 2 (Total/End)');
+      }
+      return { ok: missing.length === 0 && errors.length === 0, missing, errors };
+    }
+
+    function renderFormStatus(v) {
+      const el = document.getElementById('formStatus');
+      el.className = 'form-status' + (v.errors.length ? ' error' : '');
+      el.textContent = '';
+      if (v.ok) return;
+      const title = document.createElement('div');
+      title.className = 'form-status-title';
+      title.textContent = v.errors.length ? 'ยังสร้าง Pharmacist note ไม่ได้ ต้องแก้ก่อน' : 'กรอกให้ครบ แล้ว Pharmacist note จะขึ้นเอง';
+      el.appendChild(title);
+      const list = document.createElement('ul');
+      v.errors.forEach(text => {
+        const li = document.createElement('li');
+        li.textContent = text;
+        list.appendChild(li);
+      });
+      if (v.missing.length) {
+        const li = document.createElement('li');
+        li.textContent = 'ยังขาด: ' + v.missing.join(', ');
+        list.appendChild(li);
+      }
+      el.appendChild(list);
+    }
+
+    function showToast(message) {
+      const t = document.getElementById('toast');
+      t.textContent = message;
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 4000);
+    }
+
     function calculate() {
-      const start = getStartDateTime();
-      if (!start) return;
-
-      const freq = parseInt(document.getElementById('frequency').value);
-      const dur = parseInt(document.getElementById('duration2').value) || parseInt(document.getElementById('duration1').value) || 1;
-      const totalDoses = durationType === 'days' ? Math.ceil(dur * (24 / freq)) : parseInt(dur);
-
+      const v = validateInputs();
+      renderFormStatus(v);
       schedule = [];
+      if (!v.ok) {
+        updateUI();
+        calculateProgress();
+        return;
+      }
+
+      const start = getStartDateTime();
+      const freq = parseInt(document.getElementById('frequency').value);
+      const dur = parseInt(document.getElementById('duration2').value);
+      const totalDoses = durationType === 'days' ? Math.ceil(dur * (24 / freq)) : dur;
+
       let cur = new Date(start);
       for (let i = 0; i < totalDoses; i++) {
+        const shown = shownDoseTime(cur, i === 0);
         schedule.push({
           no: i + 1,
-          date: new Date(cur),
-          formattedDate: formatDate(cur),
-          formattedTime: formatTime(cur)
+          date: shown,
+          formattedDate: formatDate(shown),
+          formattedTime: formatTime(shown)
         });
         cur.setHours(cur.getHours() + freq);
       }
@@ -1671,9 +2008,11 @@
       circle.style.strokeDashoffset = '314.159';
       circle.style.stroke = '#10b981';
       document.getElementById('progressDisplay').className = 'progress-display';
+      document.getElementById('copyProgressBtn').disabled = true;
     }
 
     function updateProgressDisplay(d) {
+      document.getElementById('copyProgressBtn').disabled = false;
       document.getElementById('dosesReceived').textContent = d.dosesReceived;
       document.getElementById('dosesRemaining').textContent = d.dosesRemaining;
       document.getElementById('daysPassed').textContent = d.daysPassed;
@@ -1746,10 +2085,14 @@
     function getAdminTimesString() {
       const [h, m] = (document.getElementById('startTime').value || '').split(':').map(Number);
       const freq = parseInt(document.getElementById('frequency').value);
-      if (freq >= 24) return m > 0 ? `${h}.${String(m).padStart(2, '0')}` : String(h);
+      const label = t => m > 0 ? `${t}.${String(m).padStart(2, '0')}` : String(t);
+      if (freq >= 24) return label(h);
       const times = [];
-      for (let i = 0; i < 24 / freq; i++) times.push((h + i * freq) % 24);
-      return times.map(t => m > 0 ? `${t}.${String(m).padStart(2, '0')}` : t).join(', ');
+      for (let i = 0; i < 24 / freq; i++) {
+        const t = (h + i * freq) % 24;
+        times.push(i > 0 && t === 0 && m === 0 ? '23.59' : label(t));
+      }
+      return times.join(', ');
     }
 
     function calculateCheckpoint(val) {
@@ -1759,9 +2102,8 @@
       const targetDose = durationType === 'days' ? Math.ceil((24 / freq) * val) : parseInt(val);
       const target = new Date(start);
       target.setHours(target.getHours() + (targetDose - 1) * freq);
-      const display = new Date(target);
-      if (display.getHours() === 0 && display.getMinutes() === 0) display.setMinutes(-1);
-      return { date: target, formattedDate: formatFullDate(display), formattedTime: formatTime(display) };
+      const shown = shownDoseTime(target, targetDose === 1);
+      return { index: targetDose - 1, date: shown, formattedDate: formatFullDate(shown), formattedTime: formatTime(shown) };
     }
 
     function generatePharmacistNote() {
@@ -1808,81 +2150,76 @@
       }
     }
 
+    function formatDayHeader(date) {
+      return date.toLocaleDateString('th-TH', { weekday: 'short', day: 'numeric', month: 'short', year: '2-digit' });
+    }
+
+    function toggleSchedule() {
+      scheduleExpanded = !scheduleExpanded;
+      updateScheduleTable();
+    }
+
     function updateScheduleTable() {
       const tbody = document.getElementById('scheduleBody');
+      const toggle = document.getElementById('scheduleToggle');
       tbody.innerHTML = '';
-      
+      if (!schedule.length) {
+        toggle.classList.add('hidden');
+        return;
+      }
+
       const [d1, d2] = ['duration1', 'duration2'].map(id => parseInt(document.getElementById(id).value));
       const [c1, c2] = [calculateCheckpoint(d1), calculateCheckpoint(d2)];
-      
-      let ci1 = -1, ci2 = -1;
-      if (c1) {
-        const t = c1.date.getTime();
-        ci1 = schedule.findIndex(s => Math.abs(s.date.getTime() - t) < 60000);
-      }
-      if (c2) {
-        const t = c2.date.getTime();
-        ci2 = schedule.findIndex(s => Math.abs(s.date.getTime() - t) < 60000);
-      }
+      let ci1 = c1 && c1.index < schedule.length ? c1.index : -1;
+      const ci2 = c2 && c2.index < schedule.length ? c2.index : -1;
       if (ci1 === ci2 || d1 === d2) ci1 = -1;
-      
+
       const check = getCheckDateTime();
-      
-      // Find next dose index
-      let nextDoseIdx = -1;
-      if (check) {
-        for (let i = 0; i < schedule.length; i++) {
-          if (schedule[i].date > check) {
-            nextDoseIdx = i;
-            break;
-          }
+      const nextIdx = check ? schedule.findIndex(s => s.date > check) : -1;
+      const milestone = n => durationType === 'days' ? `ครบ ${n} วัน` : `Dose ${n}`;
+
+      // Every row can carry several tags, so a checkpoint dose that is also the next dose shows both.
+      const rows = schedule.map((item, idx) => {
+        const tags = [];
+        if (idx === 0) tags.push(['start', 'เริ่มต้น']);
+        if (idx === ci1) tags.push(['checkpoint', milestone(d1)]);
+        if (idx === ci2) tags.push(['end', milestone(d2)]);
+        if (idx === nextIdx) tags.push(['next', 'ถัดไป']);
+        return { item, idx, tags, received: Boolean(check) && item.date <= check };
+      });
+      const visible = scheduleExpanded ? rows : rows.filter(r => r.tags.length);
+
+      const addRow = (cls, html) => {
+        const tr = document.createElement('tr');
+        if (cls) tr.className = cls;
+        tr.innerHTML = html;
+        tbody.appendChild(tr);
+      };
+
+      let lastDay = '';
+      let lastIdx = -1;
+      visible.forEach(r => {
+        if (lastIdx >= 0 && r.idx - lastIdx > 1) addRow('gap-row', `<td colspan="3">อีก ${r.idx - lastIdx - 1} dose</td>`);
+        if (r.item.formattedDate !== lastDay) {
+          addRow('day-row', `<th colspan="3" scope="colgroup">${formatDayHeader(r.item.date)}</th>`);
+          lastDay = r.item.formattedDate;
         }
+        const tags = r.tags.length ? r.tags : [r.received ? ['received', 'ได้รับแล้ว'] : ['waiting', 'รอรับยา']];
+        const cls = [r.idx === nextIdx ? 'next-dose' : '', r.received ? 'received' : ''].filter(Boolean).join(' ');
+        addRow(cls, `
+          <td><span class="dose-number">${r.item.no}</span></td>
+          <td class="dose-time-cell">${r.item.formattedTime} น.</td>
+          <td><div class="dose-tags">${tags.map(([k, t]) => `<span class="dose-badge ${k}">${t}</span>`).join('')}</div></td>
+        `);
+        lastIdx = r.idx;
+      });
+      if (!scheduleExpanded && lastIdx < schedule.length - 1) {
+        addRow('gap-row', `<td colspan="3">อีก ${schedule.length - 1 - lastIdx} dose</td>`);
       }
 
-      schedule.forEach((item, idx) => {
-        const tr = document.createElement('tr');
-        const received = check && item.date <= check;
-        const isNextDose = idx === nextDoseIdx;
-
-        if (isNextDose) {
-          tr.className = 'next-dose';
-        } else if (received) {
-          tr.className = 'received';
-        }
-
-        // Badge
-        let badge = '';
-        if (idx === 0) {
-          badge = '<span class="dose-badge start">เริ่มต้น</span>';
-        } else if (isNextDose) {
-          badge = '<span class="dose-badge next">ถัดไป</span>';
-        } else if (idx === ci1) {
-          const l = durationType === 'days' ? `ครบ ${d1} วัน` : `Dose ${d1}`;
-          badge = `<span class="dose-badge checkpoint">${l}</span>`;
-        } else if (idx === ci2) {
-          const l = durationType === 'days' ? `ครบ ${d2} วัน` : `Dose ${d2}`;
-          badge = `<span class="dose-badge end">${l}</span>`;
-        } else if (received) {
-          badge = '<span class="dose-badge received">ได้รับแล้ว</span>';
-        } else {
-          badge = '<span class="dose-badge waiting">รอรับยา</span>';
-        }
-
-        tr.innerHTML = `
-          <td><span class="dose-number">${item.no}</span></td>
-          <td style="font-weight: 600;">${item.formattedDate}</td>
-          <td>
-            <div class="dose-time">
-              <div class="dose-time-icon">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-              </div>
-              ${item.formattedTime} น.
-            </div>
-          </td>
-          <td class="hidden-mobile">${badge}</td>
-        `;
-        tbody.appendChild(tr);
-      });
+      toggle.classList.toggle('hidden', visible.length === rows.length && !scheduleExpanded);
+      toggle.textContent = scheduleExpanded ? 'ย่อเหลือเฉพาะ dose สำคัญ' : `แสดงทุก dose (${schedule.length})`;
+      toggle.setAttribute('aria-expanded', String(scheduleExpanded));
     }
 
     // Copy functions
@@ -1894,7 +2231,7 @@
       const start = getStartDateTime();
       const check = getCheckDateTime();
       if (!start || !check || !schedule.length) {
-        alert('ไม่มีข้อมูลให้คัดลอก');
+        showToast('ยังไม่มีข้อมูลให้คัดลอก กรอกข้อมูลยาและวันเวลาที่ตรวจสอบให้ครบก่อน');
         return;
       }
       
@@ -1948,11 +2285,14 @@
       document.body.appendChild(ta);
       ta.focus();
       ta.select();
+      let copied = false;
       try {
-        document.execCommand('copy') ? showCopySuccess(btnId) : alert('ไม่สามารถคัดลอกได้');
+        copied = document.execCommand('copy');
       } catch (e) {
-        alert('ไม่สามารถคัดลอกได้: ' + e.message);
+        copied = false;
       }
+      if (copied) showCopySuccess(btnId);
+      else showToast('คัดลอกไม่ได้ ลองกดค้างที่ข้อความแล้วเลือกคัดลอก');
       document.body.removeChild(ta);
     }
 
